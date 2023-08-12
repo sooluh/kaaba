@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  -webkit-tap-highlight-color: transparent;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+a {
+  cursor: pointer;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  font-family: Manrope, ui-sans-serif, system-ui, -apple-system, Seoge UI, Roboto, Helvetica Neue,
+    Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol,
+    Noto Color Emoji;
+  line-height: 1.5;
+  -moz-tab-size: 4;
+  tab-size: 4;
+}
+
+main {
+  p {
+    @apply text-gray-800;
+  }
+
+  p,
+  ul > li,
+  ol > li {
+    & > code {
+      @apply px-1 font-mono text-sm text-blue-600 break-all whitespace-nowrap;
+    }
+  }
+}
