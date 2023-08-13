@@ -137,6 +137,6 @@
   }
 
   [dir='rtl'] {
-    font-family: 'Amiri', serif;
+    font-family: 'Amiri Quran', serif;
   }
 </style>

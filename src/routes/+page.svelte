@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import { fetcher } from '$lib/api'
-  import noIcon from '$assets/no-icon.png'
+  import { icons } from '$lib/icons'
   import Header from '$components/Header.svelte'
   import Preamble from '$components/Preamble.svelte'
   import CategoryList from '$components/CategoryList.svelte'
@@ -38,7 +38,7 @@
     {#each categories as category}
       <CategoryList
         href="/{category.slug}"
-        icon={noIcon}
+        icon={icons(category.slug)}
         title={category.name}
         caption={`${category.total} Bacaan`} />
     {/each}
