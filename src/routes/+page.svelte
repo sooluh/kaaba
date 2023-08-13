@@ -1,47 +1,52 @@
 <script lang="ts">
-  import noIcon from '$assets/icon.png'
+  import { onMount } from 'svelte'
+  import { fetcher } from '$lib/api'
+  import noIcon from '$assets/no-icon.png'
+  import Header from '$components/Header.svelte'
+  import Preamble from '$components/Preamble.svelte'
+  import CategoryList from '$components/CategoryList.svelte'
+  import { categoriesStore, type CategoryType } from '$lib/stores'
+  import CategorySkeleton from '$components/CategorySkeleton.svelte'
 
-  export let data
+  let title = 'Doa & Dzikir'
+  let categories: CategoryType[] | null = $categoriesStore || null
 
-  console.log(data.categories)
+  const fetchData = async () => {
+    if (!$categoriesStore) {
+      categories = await fetcher('categories').then((res) => res.data)
+      $categoriesStore = categories as CategoryType[]
+    }
+  }
+
+  onMount(() => {
+    fetchData()
+  })
 </script>
 
-<svelte:head>
-  <title>{data.title}</title>
-</svelte:head>
+<Header {title} />
 
-<header class="text-center py-10">
-  <h1 class="text-2xl font-bold">{data.title}</h1>
-</header>
+<section class="pb-6 px-5">
+  <Preamble />
+</section>
 
-<section id="categories" class="flex flex-col gap-4 px-5">
-  {#if !data.categories}
-    <!-- TODO: shimmer -->
-    <div
-      class="bg-white rounded-xl w-full py-4 px-5 flex items-center gap-3 cursor-pointer border-2 border-transparent hover:border-primary-500 transition ease-linear duration-250">
-      <img class="h-[42px]" src={noIcon} alt="Loading" />
-      <div class="flex-1">
-        <h2 class="text-lg font-semibold">Loading</h2>
-        <small class="text-sm text-gray-600">Loading</small>
-      </div>
-    </div>
+<section id="categories" class="flex flex-col gap-4 px-5 h-full overflow-y-auto pb-6">
+  {#if !categories}
+    {#each Array(5) as _}
+      <CategorySkeleton />
+    {/each}
   {:else}
-    {#each data.categories as category}
-      <a
+    {#each categories as category}
+      <CategoryList
         href="/{category.slug}"
-        class="bg-white rounded-xl w-full py-4 px-5 flex items-center gap-3 cursor-pointer border-2 border-transparent hover:border-primary-500 transition ease-linear duration-250">
-        <img class="h-[42px]" src={noIcon} alt={category.name} />
-        <div class="flex-1">
-          <h2 class="text-lg font-semibold">{category.name}</h2>
-          <small class="text-sm text-gray-600">{category.total} Bacaan</small>
-        </div>
-      </a>
+        icon={noIcon}
+        title={category.name}
+        caption={`${category.total} Bacaan`} />
     {/each}
   {/if}
 </section>
 
 <style lang="scss">
-  #categories > a {
-    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  #categories {
+    max-height: calc(100vh - 224px);
   }
 </style>
