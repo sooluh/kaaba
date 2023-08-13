@@ -1,7 +1,8 @@
-node_modules/
-build/
-.svelte-kit/
-package/
+node_modules
+build
+package
+.svelte-kit
+.vercel
 
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
