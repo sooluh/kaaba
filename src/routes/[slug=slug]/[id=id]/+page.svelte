@@ -1,6 +1,7 @@
 <script lang="ts">
   import { fetcher } from '$lib/api'
   import { page } from '$app/stores'
+  import { browser } from '$app/environment'
   import Header from '$components/Header.svelte'
   import { goto } from '$app/navigation'
   import { contentsStore, itemsStore, type ContentType, type ItemType } from '$lib/stores'
@@ -11,6 +12,7 @@
   let id: string
   let items: ItemType[] | null = null
   let content: ContentType | null = null
+  let lastLoadedId: string | null = null
 
   $: category = $page.params.slug
   $: id = $page.params.id
@@ -18,10 +20,17 @@
   $: content = $contentsStore?.[category]?.[Number(id)] || null
   $: currentIndex = items?.findIndex((item) => item.id === Number(id)) ?? -1
   $: prev = items && currentIndex > 0 ? items[currentIndex - 1].id : null
-  $: next = items && currentIndex >= 0 && currentIndex < items.length - 1 ? items[currentIndex + 1].id : null
+  $: next =
+    items && currentIndex >= 0 && currentIndex < items.length - 1
+      ? items[currentIndex + 1].id
+      : null
 
   const navClass = (enabled: boolean) =>
-    `w-1/2 flex justify-center ${enabled ? 'text-primary-500 cursor-pointer' : 'text-gray-500 cursor-not-allowed'}`
+    `w-1/2 flex justify-center ${
+      enabled
+        ? 'text-primary-500 dark:text-primary-300 cursor-pointer'
+        : 'text-gray-500 dark:text-gray-400 cursor-not-allowed'
+    }`
 
   const handleClick = (href: string) => {
     if (!isClicked) {
@@ -68,11 +77,17 @@
 
     content = fetched as ContentType
     title = content.categoryName
-    $contentsStore = { ...$contentsStore, [category]: { ...($contentsStore?.[category] ?? {}), [param]: content } }
+    $contentsStore = {
+      ...$contentsStore,
+      [category]: { ...($contentsStore?.[category] ?? {}), [param]: content },
+    }
   }
 
   $: if (category && id) {
-    loadContent(id)
+    if (browser && lastLoadedId !== id) {
+      lastLoadedId = id
+      loadContent(id)
+    }
   }
 </script>
 
@@ -98,45 +113,49 @@
   {#if content}
     <div>
       <h2 class="text-xl font-medium">{content.title}</h2>
+
       {#if content.notes}
-        <small class="text-gray-400 font-medium">{content.notes}</small>
+        <small class="text-gray-400 dark:text-gray-500 font-medium">{content.notes}</small>
       {/if}
     </div>
 
-    <div dir="rtl" class="text-2xl leading-[3rem]">{content.arabic}</div>
-    <p class="italic text-gray-600">{content.latin.toLowerCase()}</p>
+    <div dir="rtl" class="text-3xl leading-12">{content.arabic}</div>
+    <p class="italic text-gray-600 dark:text-gray-400">{content.latin.toLowerCase()}</p>
 
     <div>
       <h3 class="text-lg font-medium mb-3">Terjemahan</h3>
-      <p class="text-gray-700">{content.translation}</p>
+      <p class="text-gray-700 dark:text-gray-400">{content.translation}</p>
     </div>
 
     {#if content.fawaid}
       <div>
         <h3 class="text-lg font-medium mb-3">Faedah</h3>
-        <p class="text-gray-700">{content.fawaid}</p>
+        <p class="text-gray-700 dark:text-gray-400">{content.fawaid}</p>
       </div>
     {/if}
 
     {#if content.source}
-      <p class="text-center text-gray-400">{content.source}</p>
+      <p class="text-center text-gray-400 dark:text-gray-500">{content.source}</p>
     {/if}
   {/if}
 </section>
 
 <div class="fixed bottom-0 left-0 right-0 w-full py-5 px-10 max-w-screen-sm mx-auto">
-  <div class="bg-white drop-shadow-lg border rounded-full flex p-3 font-semibold">
+  <div
+    class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 drop-shadow-sm shadow-center rounded-full flex p-3 font-semibold">
     <button
       on:click={() => prev && handleClick(`/${category}/${prev}`)}
       disabled={!prev || isClicked}
-      class={navClass(Boolean(prev && !isClicked))}>
+      class={navClass(Boolean(prev && !isClicked)) +
+        ' border-0 bg-transparent outline-none focus-visible:ring-2 focus-visible:ring-primary-200 rounded-full'}>
       Sebelumnya
     </button>
 
     <button
       on:click={() => next && handleClick(`/${category}/${next}`)}
       disabled={!next || isClicked}
-      class={navClass(Boolean(next && !isClicked))}>
+      class={navClass(Boolean(next && !isClicked)) +
+        ' border-0 bg-transparent outline-none focus-visible:ring-2 focus-visible:ring-primary-200 rounded-full'}>
       Berikutnya
     </button>
   </div>

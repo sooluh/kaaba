@@ -6,12 +6,14 @@
   <title>{title}</title>
 </svelte:head>
 
-<header class="text-center py-5">
+<header class="text-center py-5 text-gray-900 dark:text-slate-100">
   <div class="flex px-4 items-center justify-between">
     <div class="w-6 shrink-0">
       <slot name="left" />
     </div>
+
     <h1 class="text-2xl font-bold">{title}</h1>
+
     <div class="w-6 shrink-0">
       <slot name="right" />
     </div>

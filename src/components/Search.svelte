@@ -7,7 +7,7 @@
   <input
     bind:value={keyword}
     on:input={onSearch}
-    class="w-full border px-4 py-3 rounded-lg"
+    class="w-full border border-gray-200 dark:border-slate-700 px-4 py-3 rounded-lg outline-none bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 focus:border-primary-400 focus:ring-2 focus:ring-primary-200 dark:focus:border-primary-500/70 dark:focus:ring-primary-500/40"
     placeholder="Cari doa ..."
     type="text"
     name="search"
@@ -15,8 +15,10 @@
 
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <div
+    role="button"
+    tabindex="0"
     on:click={onSearch}
-    class="absolute top-0 right-0 h-[50px] flex items-center px-4 text-gray-500 cursor-pointer">
+    class="absolute top-0 right-0 h-[50px] flex items-center px-4 text-gray-500 dark:text-gray-300 cursor-pointer">
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width="24"
