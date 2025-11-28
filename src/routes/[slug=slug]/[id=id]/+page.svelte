@@ -1,19 +1,36 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
   import { fetcher } from '$lib/api'
   import { page } from '$app/stores'
+  import { browser } from '$app/environment'
   import Header from '$components/Header.svelte'
-  import { beforeNavigate, goto } from '$app/navigation'
-  import { contentsStore, type ContentType } from '$lib/stores'
+  import { goto } from '$app/navigation'
+  import { contentsStore, itemsStore, type ContentType, type ItemType } from '$lib/stores'
 
   let title = 'Doa & Dzikir'
   let isClicked = false
+  let category: string
+  let id: string
+  let items: ItemType[] | null = null
+  let content: ContentType | null = null
+  let lastLoadedId: string | null = null
 
   $: category = $page.params.slug
   $: id = $page.params.id
-  $: next = Number(id) + 1
-  $: prev = Number(id) - 1
+  $: if ($itemsStore?.[category]) items = $itemsStore[category]
   $: content = $contentsStore?.[category]?.[Number(id)] || null
+  $: currentIndex = items?.findIndex((item) => item.id === Number(id)) ?? -1
+  $: prev = items && currentIndex > 0 ? items[currentIndex - 1].id : null
+  $: next =
+    items && currentIndex >= 0 && currentIndex < items.length - 1
+      ? items[currentIndex + 1].id
+      : null
+
+  const navClass = (enabled: boolean) =>
+    `w-1/2 flex justify-center ${
+      enabled
+        ? 'text-primary-500 dark:text-primary-300 cursor-pointer'
+        : 'text-gray-500 dark:text-gray-400 cursor-not-allowed'
+    }`
 
   const handleClick = (href: string) => {
     if (!isClicked) {
@@ -21,42 +38,57 @@
 
       setTimeout(() => {
         isClicked = false
-      }, 1_000)
+      }, 500)
 
       goto(href)
     }
   }
 
-  const fetchData = async (param: string | null = null) => {
-    param = param || id
+  const ensureItems = async () => {
+    if (items) return
 
-    if (!$contentsStore || !(category in $contentsStore) || !(param in $contentsStore[category]!)) {
-      content = await fetcher('categories', category, param).then((res) => res.data)
+    const cached = $itemsStore?.[category]
 
-      if (!content) return goto(`/${category}`)
-      if (!$contentsStore) $contentsStore = {}
-
-      if (category in $contentsStore) {
-        $contentsStore[category][param] = content as ContentType
-      } else {
-        $contentsStore[category] = { [param]: content as ContentType }
-      }
+    if (cached) {
+      items = cached
+      return
     }
 
-    if (!content) {
-      return goto(`/${category}`)
-    }
+    const fetched = await fetcher('categories', category).then((res) => res.data)
 
-    title = content.categoryName
+    items = fetched as ItemType[]
+    $itemsStore = { ...$itemsStore, [category]: items }
   }
 
-  onMount(() => {
-    fetchData()
-  })
+  const loadContent = async (param: string) => {
+    await ensureItems()
 
-  beforeNavigate((evt) => {
-    fetchData(evt.to?.params?.id!)
-  })
+    const cached = $contentsStore?.[category]?.[param]
+
+    if (cached) {
+      content = cached
+      title = cached.categoryName
+      return
+    }
+
+    const fetched = await fetcher('categories', category, param).then((res) => res.data)
+
+    if (!fetched) return goto(`/${category}`)
+
+    content = fetched as ContentType
+    title = content.categoryName
+    $contentsStore = {
+      ...$contentsStore,
+      [category]: { ...($contentsStore?.[category] ?? {}), [param]: content },
+    }
+  }
+
+  $: if (category && id) {
+    if (browser && lastLoadedId !== id) {
+      lastLoadedId = id
+      loadContent(id)
+    }
+  }
 </script>
 
 <Header {title}>
@@ -81,51 +113,49 @@
   {#if content}
     <div>
       <h2 class="text-xl font-medium">{content.title}</h2>
+
       {#if content.notes}
-        <small class="text-gray-400 font-medium">{content.notes}</small>
+        <small class="text-gray-400 dark:text-gray-500 font-medium">{content.notes}</small>
       {/if}
     </div>
 
-    <div dir="rtl" class="text-2xl leading-[3rem]">{content.arabic}</div>
-    <p class="italic text-gray-600">{content.latin.toLowerCase()}</p>
+    <div dir="rtl" class="text-3xl leading-12">{content.arabic}</div>
+    <p class="italic text-gray-600 dark:text-gray-400">{content.latin.toLowerCase()}</p>
 
     <div>
       <h3 class="text-lg font-medium mb-3">Terjemahan</h3>
-      <p class="text-gray-700">{content.translation}</p>
+      <p class="text-gray-700 dark:text-gray-400">{content.translation}</p>
     </div>
 
     {#if content.fawaid}
       <div>
         <h3 class="text-lg font-medium mb-3">Faedah</h3>
-        <p class="text-gray-700">{content.fawaid}</p>
+        <p class="text-gray-700 dark:text-gray-400">{content.fawaid}</p>
       </div>
     {/if}
 
     {#if content.source}
-      <p class="text-center text-gray-400">{content.source}</p>
+      <p class="text-center text-gray-400 dark:text-gray-500">{content.source}</p>
     {/if}
   {/if}
 </section>
 
 <div class="fixed bottom-0 left-0 right-0 w-full py-5 px-10 max-w-screen-sm mx-auto">
-  <div class="bg-white drop-shadow-lg border rounded-full flex p-3 font-semibold">
-    {#if id === '1'}
-      <button class="w-1/2 flex justify-center text-gray-500 cursor-pointer" disabled={true}>
-        Sebelumnya
-      </button>
-    {:else}
-      <button
-        on:click={() => handleClick(`/${category}/${prev}`)}
-        disabled={isClicked}
-        class="w-1/2 flex justify-center text-primary-500 cursor-pointer">
-        Sebelumnya
-      </button>
-    {/if}
+  <div
+    class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 drop-shadow-sm shadow-center rounded-full flex p-3 font-semibold">
+    <button
+      on:click={() => prev && handleClick(`/${category}/${prev}`)}
+      disabled={!prev || isClicked}
+      class={navClass(Boolean(prev && !isClicked)) +
+        ' border-0 bg-transparent outline-none focus-visible:ring-2 focus-visible:ring-primary-200 rounded-full'}>
+      Sebelumnya
+    </button>
 
     <button
-      on:click={() => handleClick(`/${category}/${next}`)}
-      disabled={isClicked}
-      class="w-1/2 flex justify-center text-primary-500 cursor-pointer">
+      on:click={() => next && handleClick(`/${category}/${next}`)}
+      disabled={!next || isClicked}
+      class={navClass(Boolean(next && !isClicked)) +
+        ' border-0 bg-transparent outline-none focus-visible:ring-2 focus-visible:ring-primary-200 rounded-full'}>
       Berikutnya
     </button>
   </div>

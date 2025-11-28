@@ -6,7 +6,7 @@ import eveningDhikr from '$assets/evening-dhikr.png'
 import dhikrAfterSalah from '$assets/dhikr-after-salah.png'
 
 export const icons = (slug: string) => {
-  const icons = {
+  const icons: Record<string, string> = {
     'daily-dua': dailyDua,
     'selected-dua': selectedDua,
     'morning-dhikr': morningDhikr,

@@ -1,0 +1,101 @@
+@import url('https://fonts.bunny.net/css?family=amiri-quran:400');
+@import url('https://fonts.bunny.net/css?family=manrope:200,300,400,500,600,700,800&display=swap');
+
+@import 'tailwindcss';
+@source "./src/**/*.{svelte,ts}";
+@custom-variant dark (:where(.dark, [data-theme='dark']) &);
+
+@theme {
+  --font-sans: Manrope, ui-sans-serif, system-ui, -apple-system, Seoge UI, Roboto, Helvetica Neue,
+    Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol,
+    Noto Color Emoji;
+
+  --color-primary-50: #e9fbf6;
+  --color-primary-100: #cff7eb;
+  --color-primary-200: #9aefd5;
+  --color-primary-300: #4be2b5;
+  --color-primary-400: #20ca97;
+  --color-primary-500: #1cae81;
+  --color-primary-600: #199e76;
+  --color-primary-700: #168866;
+  --color-primary-800: #127255;
+  --color-primary-900: #0d4f3b;
+  --color-primary-950: #09392b;
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  :root.dark {
+    color-scheme: dark;
+  }
+
+  html,
+  body {
+    min-height: 100%;
+  }
+
+  body {
+    background-color: #f8fafc;
+    color: #0f172a;
+    transition: background-color 150ms ease, color 150ms ease;
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+  }
+
+  :root.dark body {
+    background-color: #0f172a;
+    color: #e2e8f0;
+    scrollbar-color: #475569 transparent;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 9999px;
+  }
+
+  :root.dark ::-webkit-scrollbar-thumb {
+    background: #475569;
+  }
+
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  *:focus {
+    outline: none;
+  }
+
+  a {
+    cursor: pointer;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    font-family: var(--font-sans);
+    line-height: 1.5;
+    -moz-tab-size: 4;
+    tab-size: 4;
+  }
+
+  main p {
+    @apply text-gray-800;
+  }
+
+  main p > code,
+  main ul > li > code,
+  main ol > li > code {
+    @apply px-1 font-mono text-sm text-blue-600 break-all whitespace-nowrap;
+  }
+}
