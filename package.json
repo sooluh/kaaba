@@ -45,10 +45,11 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn format && yarn lint --fix && git add -A",
+      "pre-commit": "bun run format && bun run lint --fix && git add -A",
       "prepare-commit-msg": "exec < /dev/tty && npx cz --hook || true"
     }
   },
+  "packageManager": "bun@1.2.14",
   "devDependencies": {
     "@types/html-minifier-terser": "^7.0.0",
     "@typescript-eslint/eslint-plugin": "^5.45.0",

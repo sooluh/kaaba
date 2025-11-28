@@ -1,19 +1,27 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
   import { fetcher } from '$lib/api'
   import { page } from '$app/stores'
   import Header from '$components/Header.svelte'
-  import { beforeNavigate, goto } from '$app/navigation'
-  import { contentsStore, type ContentType } from '$lib/stores'
+  import { goto } from '$app/navigation'
+  import { contentsStore, itemsStore, type ContentType, type ItemType } from '$lib/stores'
 
   let title = 'Doa & Dzikir'
   let isClicked = false
+  let category: string
+  let id: string
+  let items: ItemType[] | null = null
+  let content: ContentType | null = null
 
   $: category = $page.params.slug
   $: id = $page.params.id
-  $: next = Number(id) + 1
-  $: prev = Number(id) - 1
+  $: if ($itemsStore?.[category]) items = $itemsStore[category]
   $: content = $contentsStore?.[category]?.[Number(id)] || null
+  $: currentIndex = items?.findIndex((item) => item.id === Number(id)) ?? -1
+  $: prev = items && currentIndex > 0 ? items[currentIndex - 1].id : null
+  $: next = items && currentIndex >= 0 && currentIndex < items.length - 1 ? items[currentIndex + 1].id : null
+
+  const navClass = (enabled: boolean) =>
+    `w-1/2 flex justify-center ${enabled ? 'text-primary-500 cursor-pointer' : 'text-gray-500 cursor-not-allowed'}`
 
   const handleClick = (href: string) => {
     if (!isClicked) {
@@ -27,36 +35,45 @@
     }
   }
 
-  const fetchData = async (param: string | null = null) => {
-    param = param || id
+  const ensureItems = async () => {
+    if (items) return
 
-    if (!$contentsStore || !(category in $contentsStore) || !(param in $contentsStore[category]!)) {
-      content = await fetcher('categories', category, param).then((res) => res.data)
+    const cached = $itemsStore?.[category]
 
-      if (!content) return goto(`/${category}`)
-      if (!$contentsStore) $contentsStore = {}
-
-      if (category in $contentsStore) {
-        $contentsStore[category][param] = content as ContentType
-      } else {
-        $contentsStore[category] = { [param]: content as ContentType }
-      }
+    if (cached) {
+      items = cached
+      return
     }
 
-    if (!content) {
-      return goto(`/${category}`)
-    }
+    const fetched = await fetcher('categories', category).then((res) => res.data)
 
-    title = content.categoryName
+    items = fetched as ItemType[]
+    $itemsStore = { ...$itemsStore, [category]: items }
   }
 
-  onMount(() => {
-    fetchData()
-  })
+  const loadContent = async (param: string) => {
+    await ensureItems()
 
-  beforeNavigate((evt) => {
-    fetchData(evt.to?.params?.id!)
-  })
+    const cached = $contentsStore?.[category]?.[param]
+
+    if (cached) {
+      content = cached
+      title = cached.categoryName
+      return
+    }
+
+    const fetched = await fetcher('categories', category, param).then((res) => res.data)
+
+    if (!fetched) return goto(`/${category}`)
+
+    content = fetched as ContentType
+    title = content.categoryName
+    $contentsStore = { ...$contentsStore, [category]: { ...($contentsStore?.[category] ?? {}), [param]: content } }
+  }
+
+  $: if (category && id) {
+    loadContent(id)
+  }
 </script>
 
 <Header {title}>
@@ -109,23 +126,17 @@
 
 <div class="fixed bottom-0 left-0 right-0 w-full py-5 px-10 max-w-screen-sm mx-auto">
   <div class="bg-white drop-shadow-lg border rounded-full flex p-3 font-semibold">
-    {#if id === '1'}
-      <button class="w-1/2 flex justify-center text-gray-500 cursor-pointer" disabled={true}>
-        Sebelumnya
-      </button>
-    {:else}
-      <button
-        on:click={() => handleClick(`/${category}/${prev}`)}
-        disabled={isClicked}
-        class="w-1/2 flex justify-center text-primary-500 cursor-pointer">
-        Sebelumnya
-      </button>
-    {/if}
+    <button
+      on:click={() => prev && handleClick(`/${category}/${prev}`)}
+      disabled={!prev || isClicked}
+      class={navClass(Boolean(prev && !isClicked))}>
+      Sebelumnya
+    </button>
 
     <button
-      on:click={() => handleClick(`/${category}/${next}`)}
-      disabled={isClicked}
-      class="w-1/2 flex justify-center text-primary-500 cursor-pointer">
+      on:click={() => next && handleClick(`/${category}/${next}`)}
+      disabled={!next || isClicked}
+      class={navClass(Boolean(next && !isClicked))}>
       Berikutnya
     </button>
   </div>
