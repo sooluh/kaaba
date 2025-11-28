@@ -38,7 +38,7 @@
 
       setTimeout(() => {
         isClicked = false
-      }, 1_000)
+      }, 500)
 
       goto(href)
     }
