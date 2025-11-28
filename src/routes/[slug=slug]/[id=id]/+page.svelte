@@ -119,7 +119,7 @@
       {/if}
     </div>
 
-    <div dir="rtl" class="text-3xl leading-12">{content.arabic}</div>
+    <div dir="rtl" class="text-3xl leading-16">{content.arabic}</div>
     <p class="italic text-gray-600 dark:text-gray-400">{content.latin.toLowerCase()}</p>
 
     <div>
