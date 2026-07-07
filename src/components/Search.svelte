@@ -18,7 +18,7 @@
     role="button"
     tabindex="0"
     on:click={onSearch}
-    class="absolute top-0 right-0 h-[50px] flex items-center px-4 text-gray-500 dark:text-gray-300 cursor-pointer">
+    class="absolute top-0 right-0 h-12.5 flex items-center px-4 text-gray-500 dark:text-gray-300 cursor-pointer">
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width="24"

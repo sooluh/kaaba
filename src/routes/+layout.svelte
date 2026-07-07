@@ -66,6 +66,6 @@
   {/if}
 </button>
 
-<main class="my-0 mx-auto min-h-full max-w-screen-sm">
+<main class="my-0 mx-auto min-h-full max-w-screen-sm lg:max-w-none">
   <slot />
 </main>

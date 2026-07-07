@@ -1,7 +1,7 @@
 <div
   class="animate-pulse bg-white dark:bg-slate-800 rounded-xl w-full py-4 px-5 flex items-center gap-3 border border-slate-200 dark:border-slate-700">
   <figure
-    class="relative h-[42px] w-[42px] flex justify-center items-center bg-gray-300 dark:bg-slate-700 rounded-lg">
+    class="relative h-10.5 w-10.5 flex justify-center items-center bg-gray-300 dark:bg-slate-700 rounded-lg">
     <svg
       width="24"
       height="24"
@@ -17,6 +17,6 @@
 
   <div class="flex-1">
     <div class="ms-1 h-6 bg-gray-200 dark:bg-slate-700 rounded w-full" />
-    <div class="ms-1 mt-2 h-[19px] bg-gray-200 dark:bg-slate-700 rounded w-[120px]" />
+    <div class="ms-1 mt-2 h-4.75 bg-gray-200 dark:bg-slate-700 rounded w-30" />
   </div>
 </div>

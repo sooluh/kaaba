@@ -4,7 +4,7 @@ export type ResponseType = {
   statusCode: number
   code: string
   message?: string
-  data?: any
+  data?: unknown
 }
 
 export const fetcher = async (...segments: string[]): Promise<ResponseType> => {
