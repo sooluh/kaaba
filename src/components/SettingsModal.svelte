@@ -90,7 +90,7 @@
         </button>
         {#if showThemeDropdown}
           <div
-            class="absolute right-0 top-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg overflow-hidden z-10 min-w-[8rem]">
+            class="absolute right-0 top-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg overflow-hidden z-10 min-w-32">
             <button
               type="button"
               class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer {theme ===
