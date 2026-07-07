@@ -260,6 +260,7 @@
 
     <p class="text-xs text-center text-gray-400 dark:text-gray-500">
       Menggunakan RESTful API dari
+      <br />
       <a
         href="https://github.com/fitrahive/dua-dhikr"
         target="_blank"
