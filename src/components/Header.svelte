@@ -8,7 +8,7 @@
 </svelte:head>
 
 <header class="text-center py-5 text-gray-900 dark:text-slate-100">
-  <div class="grid grid-cols-[1.5rem_1fr_1.5rem] items-center gap-2 px-4">
+  <div class="grid grid-cols-[1.5rem_1fr_1.5rem] items-center gap-4 px-4">
     <div>
       <slot name="left" />
     </div>

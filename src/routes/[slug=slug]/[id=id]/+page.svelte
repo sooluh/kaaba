@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte'
+  import { onDestroy } from 'svelte'
   import { tweened } from 'svelte/motion'
   import { cubicOut } from 'svelte/easing'
   import { find } from '$lib/find'
@@ -125,10 +126,26 @@
   onMount(() => {
     fetchCategories()
     panelOpacity.set(1)
+    window.addEventListener('keydown', handleKeydown)
+  })
+
+  onDestroy(() => {
+    if (browser) window.removeEventListener('keydown', handleKeydown)
   })
 
   const handleContentScroll = (e: Event) => {
     showContentTitle = (e.target as HTMLElement).scrollTop > 40
+  }
+
+  const handleKeydown = (e: KeyboardEvent) => {
+    if (window.innerWidth < 1024) return
+    if (e.key === 'ArrowRight' && next) {
+      e.preventDefault()
+      handleClick(`/${category}/${next}`)
+    } else if (e.key === 'ArrowLeft' && prev) {
+      e.preventDefault()
+      handleClick(`/${category}/${prev}`)
+    }
   }
 </script>
 
@@ -238,7 +255,7 @@
     <section
       id="content"
       on:scroll={handleContentScroll}
-      class="flex flex-col gap-8 px-5 h-full overflow-y-auto pb-27.5 lg:flex-1 lg:pb-0 lg:max-h-none">
+      class="flex flex-col gap-8 px-5 h-full overflow-y-auto pb-27.5 lg:flex-1 lg:pb-6 lg:max-h-none">
       {#if loadingContent}
         <div class="flex flex-col gap-8">
           <div class="animate-pulse bg-slate-200 dark:bg-slate-700 rounded h-7 w-48" />
@@ -255,8 +272,14 @@
           {/if}
         </div>
 
-        <div dir="rtl" class="text-3xl leading-16">{content.arabic}</div>
-        <p class="italic text-gray-600 dark:text-gray-400">{content.latin.toLowerCase()}</p>
+        <div dir="rtl" style="font-size: var(--arabic-font-size); line-height: 2">
+          {content.arabic}
+        </div>
+        <p
+          class="italic text-gray-600 dark:text-gray-400"
+          style="font-size: var(--latin-font-size)">
+          {content.latin.toLowerCase()}
+        </p>
 
         <div>
           <h3 class="text-lg font-medium mb-3">Terjemahan</h3>
