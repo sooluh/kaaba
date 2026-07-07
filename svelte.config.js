@@ -13,7 +13,9 @@ const config = {
     }),
   ],
   kit: {
-    adapter: adapter(),
+    adapter: adapter({
+      runtime: 'nodejs20.x',
+    }),
     alias: {
       $assets: 'src/assets',
       $components: 'src/components',

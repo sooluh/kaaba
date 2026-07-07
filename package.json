@@ -51,7 +51,7 @@
     }
   },
   "devDependencies": {
-    "@sveltejs/adapter-vercel": "^6.3.4",
+    "@sveltejs/adapter-vercel": "^5",
     "@types/html-minifier-terser": "^7.0.2",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
