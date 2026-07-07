@@ -47,6 +47,9 @@ type ContentStoreType = Record<string, Record<string, ContentType>>
 export const categoriesStore = writable<CategoryType[] | null>(null)
 export const arabicFontSize = persisted('arabicFontSize', 30)
 export const latinFontSize = persisted('latinFontSize', 16)
+export const showTranslation = persisted('showTranslation', true)
+export const showFawaid = persisted('showFawaid', true)
+export const showFootnote = persisted('showFootnote', true)
 export const itemsStore = writable<ItemStoreType | null>(null)
 export const contentsStore = writable<ContentStoreType | null>(null)
 

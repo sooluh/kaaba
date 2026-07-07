@@ -20,6 +20,9 @@
     itemsStore,
     navigationLocked,
     lockNavigation,
+    showTranslation,
+    showFawaid,
+    showFootnote,
     type CategoryType,
     type ContentType,
     type ItemType,
@@ -40,6 +43,9 @@
   $: headerSubtitle = showContentTitle && content?.notes ? content.notes : ''
   $: filteredItems = centerKeyword ? find(items || [], centerKeyword) : items
   $: locked = $navigationLocked || $navigating !== null
+  $: st = $showTranslation
+  $: sf = $showFawaid
+  $: sfn = $showFootnote
 
   $: category = $page.params.slug
   $: id = $page.params.id
@@ -281,19 +287,21 @@
           {content.latin.toLowerCase()}
         </p>
 
-        <div>
-          <h3 class="text-lg font-medium mb-3">Terjemahan</h3>
-          <p class="text-gray-700 dark:text-gray-400">{content.translation}</p>
-        </div>
+        {#if st}
+          <div>
+            <h3 class="text-lg font-medium mb-3">Terjemahan</h3>
+            <p class="text-gray-700 dark:text-gray-400">{content.translation}</p>
+          </div>
+        {/if}
 
-        {#if content.fawaid}
+        {#if sf && content.fawaid}
           <div>
             <h3 class="text-lg font-medium mb-3">Faedah</h3>
             <p class="text-gray-700 dark:text-gray-400">{content.fawaid}</p>
           </div>
         {/if}
 
-        {#if content.source}
+        {#if sfn && content.source}
           <p class="text-center text-gray-400 dark:text-gray-500">{content.source}</p>
         {/if}
       {/if}

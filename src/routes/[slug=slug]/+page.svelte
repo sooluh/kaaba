@@ -128,11 +128,10 @@
           </svg>
         </a>
       </Header>
+      <div class="px-5 pb-4">
+        <Search bind:keyword onSearch={search} />
+      </div>
     </div>
-
-    <section class="flex flex-col gap-4 px-5 pb-6">
-      <Search bind:keyword onSearch={search} />
-    </section>
 
     <section
       id="items"
